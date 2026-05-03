@@ -1,94 +1,57 @@
 import numpy as np
 from scipy.integrate import quad
 
-
-def heston_characteristic_function(u, S0, T, r, q, kappa, theta, xi, rho, v0):
-    """
-    Heston characteristic function for log(S_T).
-    """
-    i = 1j
-
-    x = np.log(S0)
-    drift = r - q
-
-    d = np.sqrt((rho * xi * i * u - kappa) ** 2 + xi**2 * (i * u + u**2))
-
-    g = (kappa - rho * xi * i * u - d) / (
-        kappa - rho * xi * i * u + d
-    )
-
-    C = (
-        i * u * (x + drift * T)
-        + (kappa * theta / xi**2)
-        * (
-            (kappa - rho * xi * i * u - d) * T
-            - 2 * np.log((1 - g * np.exp(-d * T)) / (1 - g))
-        )
-    )
-
-    D = (
-        ((kappa - rho * xi * i * u - d) / xi**2)
-        * ((1 - np.exp(-d * T)) / (1 - g * np.exp(-d * T)))
-    )
-
-    return np.exp(C + D * v0)
-
-
-def _integrand_P1(u, S0, K, T, r, q, kappa, theta, xi, rho, v0):
-    i = 1j
-
-    phi_u_minus_i = heston_characteristic_function(
-        u - i, S0, T, r, q, kappa, theta, xi, rho, v0
-    )
-
-    phi_minus_i = heston_characteristic_function(
-        -i, S0, T, r, q, kappa, theta, xi, rho, v0
-    )
-
-    numerator = np.exp(-i * u * np.log(K)) * phi_u_minus_i
-    denominator = i * u * phi_minus_i
-
-    return np.real(numerator / denominator)
-
-
-def _integrand_P2(u, S0, K, T, r, q, kappa, theta, xi, rho, v0):
-    i = 1j
-
-    phi_u = heston_characteristic_function(
-        u, S0, T, r, q, kappa, theta, xi, rho, v0
-    )
-
-    numerator = np.exp(-i * u * np.log(K)) * phi_u
-    denominator = i * u
-
-    return np.real(numerator / denominator)
-
-
 def heston_call_price(S0, K, T, r, q, kappa, theta, xi, rho, v0):
-    """
-    European call price under the Heston model.
+    I = 1j
+    P = 0
+    # umax = 1000
+    umax = 250
+    # N = 10000
+    N = 2500
+    du = umax / N
 
-    Uses:
-        C = S0 * exp(-qT) * P1 - K * exp(-rT) * P2
-    """
+    aa = theta * kappa * T / xi**2
+    bb = -2 * theta * kappa / xi**2
 
-    P1_integral = quad(
-        lambda u: _integrand_P1(u, S0, K, T, r, q, kappa, theta, xi, rho, v0),
-        1e-8,
-        100,
-        limit=100,
-    )[0]
+    for i in range(1, N):
+        u2 = i * du
+        u1 = complex(u2, -1)
 
-    P2_integral = quad(
-        lambda u: _integrand_P2(u, S0, K, T, r, q, kappa, theta, xi, rho, v0),
-        1e-8,
-        100,
-        limit=100,
-    )[0]
+        a1 = rho * xi * u1 * I
+        a2 = rho * xi * u2 * I
 
-    P1 = 0.5 + P1_integral / np.pi
-    P2 = 0.5 + P2_integral / np.pi
+        d1 = np.sqrt((a1 - kappa) ** 2 + xi**2 * (u1 * I + u1**2))
+        d2 = np.sqrt((a2 - kappa) ** 2 + xi**2 * (u2 * I + u2**2))
 
-    price = S0 * np.exp(-q * T) * P1 - K * np.exp(-r * T) * P2
+        g1 = (kappa - a1 - d1) / (kappa - a1 + d1)
+        g2 = (kappa - a2 - d2) / (kappa - a2 + d2)
 
-    return max(float(price), 0.0)
+        b1 = np.exp(u1 * I * (np.log(S0 / K) + (r - q) * T)) * (
+            (1 - g1 * np.exp(-d1 * T)) / (1 - g1)
+        ) ** bb
+
+        b2 = np.exp(u2 * I * (np.log(S0 / K) + (r - q) * T)) * (
+            (1 - g2 * np.exp(-d2 * T)) / (1 - g2)
+        ) ** bb
+
+        phi1 = b1 * np.exp(
+            aa * (kappa - a1 - d1)
+            + v0
+            * (kappa - a1 - d1)
+            * (1 - np.exp(-d1 * T))
+            / (1 - g1 * np.exp(-d1 * T))
+            / xi**2
+        )
+
+        phi2 = b2 * np.exp(
+            aa * (kappa - a2 - d2)
+            + v0
+            * (kappa - a2 - d2)
+            * (1 - np.exp(-d2 * T))
+            / (1 - g2 * np.exp(-d2 * T))
+            / xi**2
+        )
+
+        P += ((phi1 - phi2) / (u2 * I)) * du
+
+    return K * np.real((S0 / K - np.exp(-r * T)) / 2 + P / np.pi)
