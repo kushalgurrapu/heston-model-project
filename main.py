@@ -1,6 +1,7 @@
 from heston.sampling import *
 from heston.market import S0, T_grid, K_grid
 from heston.pricing import heston_call_price
+from heston.dataset import generate_one_sample
 
 print("Market Settings:")
 print("S0 = ", S0)
@@ -20,6 +21,14 @@ for K in K_grid:
 
 print("Heston params:", heston_params)
 print("Market params:", market_params)
+
+X, y = generate_one_sample()
+
+print("X shape:", X.shape)
+print("y shape:", y.shape)
+print("X:", X)
+print("y:", y)
+
 # print("Call price:", price)
 
 # print("\nEx Heston Params:")
