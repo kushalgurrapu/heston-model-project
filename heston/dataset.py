@@ -1,5 +1,6 @@
 import numpy as np
 
+from tqdm import tqdm
 from heston.market import S0, K_grid, T_grid
 from heston.sampling import sample_heston_params, sample_market_params
 from heston.pricing import heston_call_price
@@ -34,3 +35,14 @@ def generate_one_sample():
     y_scaled = (y - y_min) / (y_max - y_min)
 
     return X, y_scaled
+
+def generate_dataset(N):
+    X_data = []
+    y_data = []
+
+    for _ in tqdm(range(N)):
+        X, y = generate_one_sample()  # ← just call it directly
+        X_data.append(X)
+        y_data.append(y)
+
+    return np.array(X_data), np.array(y_data)
