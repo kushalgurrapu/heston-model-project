@@ -1,5 +1,6 @@
 import numpy as np
 
+from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 from heston.market import S0, K_grid, T_grid
 from heston.sampling import sample_heston_params, sample_market_params
@@ -44,5 +45,21 @@ def generate_dataset(N):
         X, y = generate_one_sample()  # ← just call it directly
         X_data.append(X)
         y_data.append(y)
+
+    return np.array(X_data), np.array(y_data)
+
+def _worker(_):
+    return generate_one_sample()
+
+def generate_dataset_parallel(N, n_workers=None, chunksize=1):
+    if n_workers is None:
+        n_workers = cpu_count()
+
+    X_data = []
+    y_data = []
+    with Pool(n_workers) as pool:
+        for X, y in tqdm(pool.imap_unordered(_worker, range(N), chunksize=chunksize), total=N):
+            X_data.append(X)
+            y_data.append(y)
 
     return np.array(X_data), np.array(y_data)

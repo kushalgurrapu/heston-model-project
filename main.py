@@ -1,39 +1,33 @@
-from heston.sampling import *
+import argparse
+import os
+
+import numpy as np
+
 from heston.market import S0, T_grid, K_grid
-from heston.pricing import heston_call_price
-from heston.dataset import generate_one_sample, generate_dataset
+from heston.dataset import generate_dataset_parallel
 
-print("Market Settings:")
-print("S0 = ", S0)
-print("K_grid = ", K_grid)
-print("T_grid = ", T_grid)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--N", type=int, default=1000)
+    args = parser.parse_args()
+    N = args.N
 
-N = 1000
-# Test if you change N and umax vals
-# price = heston_call_price(
-#     S0=95,
-#     K=100,
-#     T=2,
-#     r=0.03,
-#     q=0.0,
-#     kappa=1.5768,
-#     theta=0.0398,
-#     xi=0.575,
-#     rho=-0.5711,
-#     v0=0.1
-# )
-# print(price)
-# Should be around 12.356
+    print("Market Settings:")
+    print("S0 = ", S0)
+    print("K_grid = ", K_grid)
+    print("T_grid = ", T_grid)
 
-print(f"Generating {N} samples...")
-X, y = generate_dataset(N)
+    print(f"Generating {N} samples...")
+    X, y = generate_dataset_parallel(N)
 
-print("Done!")
-print("X shape:", X.shape)
-print("y shape:", y.shape)
+    print("Done!")
+    print("X shape:", X.shape)
+    print("y shape:", y.shape)
 
-# Save dataset
-np.save("data/X_1000.npy", X)
-np.save("data/y_1000.npy", y)
+    os.makedirs("data", exist_ok=True)
+    x_path = f"data/X_{N}.npy"
+    y_path = f"data/y_{N}.npy"
+    np.save(x_path, X)
+    np.save(y_path, y)
 
-print("Saved to data/X_1000.npy and data/y_1000.npy")
+    print(f"Saved to {x_path} and {y_path}")

@@ -1,13 +1,10 @@
 import numpy as np
 from scipy.integrate import quad
 
-def heston_call_price(S0, K, T, r, q, kappa, theta, xi, rho, v0):
+def heston_call_price(S0, K, T, r, q, kappa, theta, xi, rho, v0,
+                      umax=250, N=2500):
     I = 1j
     P = 0
-    # umax = 1000
-    umax = 250
-    # N = 10000
-    N = 2500
     du = umax / N
 
     aa = theta * kappa * T / xi**2
