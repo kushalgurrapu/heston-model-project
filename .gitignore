@@ -219,9 +219,12 @@ __marimo__/
 
 #Project-specific
 data/
-models/
 *.npy
 *.csv
+
+# Trained model weights (keep JSON metrics + loss plots tracked)
+*.keras
+*.h5
 
 # LaTeX build artifacts
 *.aux

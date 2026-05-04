@@ -1,0 +1,29 @@
+{
+  "variant": "paper",
+  "test_mse_scaled": 0.021363548934459686,
+  "n_train": 9000,
+  "n_test": 1000,
+  "epochs_run": 764,
+  "per_param": {
+    "kappa": {
+      "mae": 0.5482634443979485,
+      "mean_relative_error": 0.274565360686649
+    },
+    "theta": {
+      "mae": 0.002737993384158029,
+      "mean_relative_error": 0.06716058947274868
+    },
+    "xi": {
+      "mae": 0.07289118118690267,
+      "mean_relative_error": 0.2730371682074888
+    },
+    "rho": {
+      "mae": 0.11475836616019677,
+      "mean_relative_error": 0.20011697170902007
+    },
+    "v0": {
+      "mae": 0.00382469235972026,
+      "mean_relative_error": 0.10875289461025021
+    }
+  }
+}

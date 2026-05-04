@@ -17,6 +17,22 @@ if __name__ == "__main__":
     print("K_grid = ", K_grid)
     print("T_grid = ", T_grid)
 
+    # Test if you change N and umax vals
+    # price = heston_call_price(
+    #     S0=95,
+    #     K=100,
+    #     T=2,
+    #     r=0.03,
+    #     q=0.0,
+    #     kappa=1.5768,
+    #     theta=0.0398,
+    #     xi=0.575,
+    #     rho=-0.5711,
+    #     v0=0.1
+    # )
+    # print(price)
+    # Should be around 12.356
+
     print(f"Generating {N} samples...")
     X, y = generate_dataset_parallel(N)
 
@@ -24,6 +40,7 @@ if __name__ == "__main__":
     print("X shape:", X.shape)
     print("y shape:", y.shape)
 
+    # Save the dataset
     os.makedirs("data", exist_ok=True)
     x_path = f"data/X_{N}.npy"
     y_path = f"data/y_{N}.npy"

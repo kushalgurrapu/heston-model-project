@@ -1,0 +1,29 @@
+{
+  "variant": "modern",
+  "test_mse_scaled": 0.003991642966866493,
+  "n_train": 9000,
+  "n_test": 1000,
+  "epochs_run": 480,
+  "per_param": {
+    "kappa": {
+      "mae": 0.16713165182595208,
+      "mean_relative_error": 0.07349168090183236
+    },
+    "theta": {
+      "mae": 0.0012562637125487065,
+      "mean_relative_error": 0.03134651971933841
+    },
+    "xi": {
+      "mae": 0.026591681268764565,
+      "mean_relative_error": 0.1132228647643272
+    },
+    "rho": {
+      "mae": 0.053067567765965835,
+      "mean_relative_error": 0.08823451698320642
+    },
+    "v0": {
+      "mae": 0.0011926876583504059,
+      "mean_relative_error": 0.03799512476239354
+    }
+  }
+}
